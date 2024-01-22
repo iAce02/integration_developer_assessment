@@ -11,7 +11,7 @@ The repo also contains a sqlite database, it contains a single `Hotel` record th
 
 ## TODO
 - Fork the repo into your own Github account. Make the fork public.
-- Implement the 4 PMS methods `clean_webhook_payload`, `handle_webhook`, `update_tomorrows_stays`, `stay_has_breakfast`
+- Implement the 4 PMS methods `clean_webhook_payload`, `handle_webhook`, `update_tomorrows_stays`, `stay_has_breakfast` for Mews PMS class.
 - Test the webhook call by making a (Postman) POST request to the url: `http://localhost:8000/webhook/mews/` with the payload:
 ```
 {
