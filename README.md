@@ -1,5 +1,6 @@
 # Runnr.ai integration developer assessment
 This repository contains working Django code. Run your code locally, you don't need any external services.
+The repo also contains a sqlite database, it contains a single `Hotel` record that you can use for testing. The `pms_hotel_id` corresponds with the example payloads.
 
 ## Prerequisites:
 - use Python version 3.11
