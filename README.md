@@ -10,14 +10,14 @@ The repo also contains a sqlite database, it contains a single `Hotel` record th
 `python manage.py runserver 0.0.0.0:8000`
 
 ## Relevant information
-- The file `views.py` contains a webhook endpoint to receive updates from the PMS. These updates don't contain any details of the actual reservations. They require you to fetch additional details of any reservation..
+- The file `views.py` contains a webhook endpoint to receive updates from the PMS. These updates don't contain any details of the actual reservations. They require you to fetch additional details of any reservation.
 - The file `external_api.py` mocks API calls that are available to you to get additional guest and reservation details. Note that the API calls sometimes generate errors, or invalid data. You should deal with those in the way you see fit.
 - The file `pms_systems.py` contains an AbstractBaseClass and a ChildClass of a `PMS`. You will find explanations of what all the methods do inside the methods of the ABC.
 - The file `models.py` contains your database models. The models should be mostly self-explanatory. Relations are defined and some columns have `help_text`.
 
 ## TODO
 - Fork the repo into your own Github account. Make the fork public.
-- Implement the 4 PMS methods of the child class `PMS_Mews` in the file `pms_systems.py`: `clean_webhook_payload`, `handle_webhook`, `update_tomorrows_stays`, `stay_has_breakfast` for Mews PMS class.
+- Implement the 4 PMS methods of the child class `PMS_Mews` in the file `pms_systems.py`: `clean_webhook_payload`, `handle_webhook`, `update_tomorrows_stays`, `stay_has_breakfast`.
 - Test the webhook call by making a (Postman) POST request to the url: `http://localhost:8000/webhook/mews/` with the payload:
 ```
 {
