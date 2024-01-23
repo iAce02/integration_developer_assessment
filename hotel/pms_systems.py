@@ -40,6 +40,9 @@ class PMS(ABC):
         This method is called when we receive a webhook from the PMS.
         Handle webhook handles the events and updates relevant models in the database.
         Requirements:
+            - Now that the PMS has notified you about an update of a reservation, you need to
+                get more details of this reservation. For this, you can use the mock API
+                call get_reservation_details(reservation_id).
             - Handle the payload for the correct hotel.
             - Update or create a Stay.
             - Update or create Guest details.
@@ -51,7 +54,8 @@ class PMS(ABC):
         """
         This method is called every day at 00:00 to update the stays checking in tomorrow.
         Requirements:
-            - Get all stays checking in tomorrow.
+            - Get all stays checking in tomorrow by calling the mock API
+                get_reservations_between_dates(checkin_date, checkout_date).
             - Update or create the Stays.
             - Update or create Guest details. Deal with missing and incomplete data yourself
                 as you see fit. Deal with the Language yourself. country != language.
@@ -62,9 +66,10 @@ class PMS(ABC):
     def stay_has_breakfast(self, stay: Stay) -> Optional[bool]:
         """
         This method is called when we want to know if the stay includes breakfast.
-        We should do a request to the PMS to get the latest information.
+        Notice that the breakfast data is not stored in any of the models?
+        How would you deal with this?
         Requirements:
-            - Get the reservation details from the PMS.
+            - Your input is a Stay object.
             - Return True if the stay includes breakfast, otherwise False. Return None if
                 you don't know.
         """

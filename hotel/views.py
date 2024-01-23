@@ -23,9 +23,15 @@ def webhook(request, pms_name):
                 }
             },
             {
-                "Name": "SomeRandomEvent",
+                "Name": "ReservationUpdated",
                 "Value": {
                     "ReservationId": "7c22cb23-c517-48f9-a5d4-da811043bd67"
+                }
+            },
+            {
+                "Name": "ReservationUpdated",
+                "Value": {
+                    "ReservationId": "7c22cb23-c517-48f9-a5d4-da811023bd67"
                 }
             }
         ]
