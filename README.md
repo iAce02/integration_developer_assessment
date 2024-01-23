@@ -17,8 +17,8 @@ The repo also contains a sqlite database, it contains a single `Hotel` record th
 
 ## TODO
 - Fork the repo into your own Github account. Make the fork public.
-- Implement the 4 PMS methods of the child class `PMS_Mews` in the file `pms_systems.py`: `clean_webhook_payload`, `handle_webhook`, `update_tomorrows_stays`, `stay_has_breakfast`.
-- Test the webhook call by making a (Postman) POST request to the url: `http://localhost:8000/webhook/mews/` with the payload:
+- Implement the child classes `PMS_Mews` in the file `pms_systems.py`: `clean_webhook_payload`, `handle_webhook`, `update_tomorrows_stays`, `stay_has_breakfast`.
+- Webhook calls should use the `clean_webhook_payload`, `handle_webhook` methods. You should test the webhook functionality by making Postman POST request to the url: `http://localhost:8000/webhook/mews/` with the payload:
 ```
 {
     "HotelId": "851df8c8-90f2-4c4a-8e01-a4fc46b25178",
@@ -45,5 +45,5 @@ The repo also contains a sqlite database, it contains a single `Hotel` record th
     ]
 }
 ```
-- Test the `update_tomorrows_stays` method by running a Django shell and calling the method manually.
-- Make sure all methods create or update the necessary database models
+- imagine that the method `update_tomorrows_stays` runs every day in the evening to update the stays that will checkin tomorrow. You should test this by running a Django shell and calling the method manually. `python manage.py shell`
+- The last method `stay_has_breakfast` can be called from anywhere in the code. It should return the correct value.
