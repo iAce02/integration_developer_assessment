@@ -24,14 +24,17 @@ reservation_statuses = [
 ]
 
 
-def get_reservations_between_dates(checkin_date: str, checkout_date: str) -> str:
+def get_reservations_for_given_checkin_date(checkin_date: str) -> str:
     """
-    Returns the reservations between the given checkin and checkout dates.
+    Returns random reservations from a queue (that n).
     The reservations are returned as a JSON string.
     Note, the checkin and checkout dates are strings in the format YYYY-MM-DD.
     It just returns a random list of reservations, the checkin and checkout dates are
     ignored. This is just to simulate the external API.
     """
+
+    assert isinstance(checkin_date, str), "checkin_date should be a string."
+    assert datetime.datetime.strptime(checkin_date, "%Y-%m-%d"), "checkin_date should have the format: YYYY-MM-DD."
 
     # This API call can fail randomly, just to simulate a real API.
     if random.randint(0, 10) == 0:
@@ -43,15 +46,10 @@ def get_reservations_between_dates(checkin_date: str, checkout_date: str) -> str
                 "HotelId": "851df8c8-90f2-4c4a-8e01-a4fc46b25178",
                 "ReservationId": str(uuid.uuid4()),
                 "GuestId": str(uuid.uuid4()),
-                "Status": reservation_statuses[
-                    random.randint(0, len(reservation_statuses) - 1)
-                ],
-                "CheckInDate": (
-                    datetime.date.today()
-                    - datetime.timedelta(days=random.randint(0, 10))
-                ).strftime("%Y-%m-%d"),
+                "Status": reservation_statuses[random.randint(0, len(reservation_statuses) - 1)],
+                "CheckInDate": checkin_date,
                 "CheckOutDate": (
-                    datetime.date.today()
+                    datetime.datetime.strptime(checkin_date, "%Y-%m-%d")
                     + datetime.timedelta(days=random.randint(1, 10))
                 ).strftime("%Y-%m-%d"),
                 "BreakfastIncluded": random.choice([True, False]),
@@ -77,15 +75,13 @@ def get_reservation_details(reservation_id: str) -> str:
             "HotelId": "851df8c8-90f2-4c4a-8e01-a4fc46b25178",
             "ReservationId": reservation_id,
             "GuestId": str(uuid.uuid4()),
-            "Status": reservation_statuses[
-                random.randint(0, len(reservation_statuses) - 1)
-            ],
-            "CheckInDate": (
-                datetime.date.today() - datetime.timedelta(days=random.randint(0, 10))
-            ).strftime("%Y-%m-%d"),
-            "CheckOutDate": (
-                datetime.date.today() + datetime.timedelta(days=random.randint(1, 10))
-            ).strftime("%Y-%m-%d"),
+            "Status": reservation_statuses[random.randint(0, len(reservation_statuses) - 1)],
+            "CheckInDate": (datetime.date.today() - datetime.timedelta(days=random.randint(0, 10))).strftime(
+                "%Y-%m-%d"
+            ),
+            "CheckOutDate": (datetime.date.today() + datetime.timedelta(days=random.randint(1, 10))).strftime(
+                "%Y-%m-%d"
+            ),
             "BreakfastIncluded": random.choice([True, False]),
             "RoomNumber": random.randint(1, 100),
         }

@@ -5,7 +5,7 @@ import sys
 from typing import Optional
 
 from hotel.external_api import (
-    get_reservations_between_dates,
+    get_reservations_for_given_checkin_date,
     get_reservation_details,
     get_guest_details,
     APIError,
@@ -30,7 +30,8 @@ class PMS(ABC):
     @abstractmethod
     def clean_webhook_payload(self, payload: str) -> dict:
         """
-        Clean the json payload and return a usable dict.
+        Clean the json payload and return a usable object.
+        Make sure the payload contains all the needed information to handle it properly
         """
         raise NotImplementedError
 
@@ -52,10 +53,9 @@ class PMS(ABC):
     @abstractmethod
     def update_tomorrows_stays(self) -> bool:
         """
-        This method is called every day at 00:00 to update the stays checking in tomorrow.
+        This method is called every day at 00:00 to update the stays with a checkin date tomorrow.
         Requirements:
-            - Get all stays checking in tomorrow by calling the mock API
-                get_reservations_between_dates(checkin_date, checkout_date).
+            - Get all stays checking in tomorrow by calling the mock API endpoint get_reservations_for_given_checkin_date.
             - Update or create the Stays.
             - Update or create Guest details. Deal with missing and incomplete data yourself
                 as you see fit. Deal with the Language yourself. country != language.
@@ -66,12 +66,8 @@ class PMS(ABC):
     def stay_has_breakfast(self, stay: Stay) -> Optional[bool]:
         """
         This method is called when we want to know if the stay includes breakfast.
-        Notice that the breakfast data is not stored in any of the models?
-        How would you deal with this?
-        Requirements:
-            - Your input is a Stay object.
-            - Return True if the stay includes breakfast, otherwise False. Return None if
-                you don't know.
+        Notice that the breakfast data is not stored in any of the models, we always want real time data.
+        - Return True if the stay includes breakfast, otherwise False. Return None if you don't know.
         """
         raise NotImplementedError
 
