@@ -26,11 +26,10 @@ reservation_statuses = [
 
 def get_reservations_for_given_checkin_date(checkin_date: str) -> str:
     """
-    Returns random reservations from a queue (that n).
+    Returns reservations for a given checkin date.
     The reservations are returned as a JSON string.
-    Note, the checkin and checkout dates are strings in the format YYYY-MM-DD.
-    It just returns a random list of reservations, the checkin and checkout dates are
-    ignored. This is just to simulate the external API.
+    Note, the checkin date is a string in the format YYYY-MM-DD.
+    This is just to simulate the external API.
     """
 
     assert isinstance(checkin_date, str), "checkin_date should be a string."
