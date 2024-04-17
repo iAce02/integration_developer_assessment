@@ -2,6 +2,11 @@
 This repository contains working Django code. Run your code locally, you don't need any external services.
 The repo also contains a sqlite database, it contains a single `Hotel` record that you can use for testing. The `pms_hotel_id` corresponds with the example payloads.
 
+## What we pay attention to
+As an integration developer, it is your job to provide really high quality data into the database. That means we will be checking how you clean and handle garbage data or mismatches between our internal data models and the API data. Please pay extra attention to:
+- Data cleaning, validation and mapping
+- Error handling and garbage data from the APIs
+
 ## Prerequisites:
 - use Python version 3.11
 - install dependencies by running: `pip install -r requirements.txt`
