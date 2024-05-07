@@ -1,7 +1,7 @@
+import datetime
 import json
 import random
 import uuid
-import datetime
 
 """
 This document simulates the external API that our system uses to communicate with the
@@ -11,7 +11,16 @@ simulate the communication with the external API.
 
 
 class APIError(Exception):
-    pass
+    # in this case the status codes and response from external_api are None,
+    # but it is a good message if later that is handled differently
+    def __init__(self, message, status_code=None, response=None):
+        self.message = message
+        self.status_code = status_code
+        self.response = response
+        super().__init__(message)
+
+    def __str__(self):
+        return f"{self.message} - Status Code: {self.status_code} - Response: {self.response}"
 
 
 reservation_statuses = [

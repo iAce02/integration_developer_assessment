@@ -1,7 +1,6 @@
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.http import HttpResponse
-
 from hotel import pms_systems
 
 
@@ -15,11 +14,9 @@ def webhook(request, pms_name):
     """
 
     pms = pms_systems.get_pms(pms_name)
-
     payload_cleaned = pms.clean_webhook_payload(request.body)
     success = pms.handle_webhook(payload_cleaned)
-
     if not success:
-        return HttpResponse(status=400)
+        return success
     else:
         return HttpResponse("Thanks for the update.")
