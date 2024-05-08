@@ -5,6 +5,8 @@ from .external_api import get_reservations_for_given_checkin_date, get_guest_det
 from .models import Stay, Guest, Hotel
 import json
 import datetime
+import phonenumbers
+import pycountry
 
 from typing import Optional
 
@@ -86,13 +88,12 @@ class PMS_Mews(PMS):
     def handle_webhook(self, webhook_data: dict) -> bool:
         hotel_id = webhook_data.get('hotel_id')
         reservation_ids = webhook_data.get('reservation_ids', [])
-
         hotel = Hotel.objects.filter(pms_hotel_id=hotel_id).first()
 
-        # Check if the hotel exists
         if not hotel:
             print(f"Hotel with PMS Hotel ID {hotel_id} not found.")
             return False
+
         for reservation_id in reservation_ids:
             try:
                 reservation_details_json = get_reservation_details(reservation_id)
@@ -105,22 +106,35 @@ class PMS_Mews(PMS):
                 guest_name = guest_details.get('Name')
                 guest_language = guest_details.get('Country')
 
-                # since the guest are identified by their phone i implemented this block
-                # i believe these phones are not valid, that is why i exclude them
-                clean_phones = ['', 'Not available', '123']
-                if guest_phone is None or guest_phone in clean_phones:
-                    print("Guest not available (no phone specified). Skipping.")
+                # Validate and clean phone number
+                try:
+                    guest_phone_parsed = phonenumbers.parse(guest_phone, None)
+                    if not phonenumbers.is_valid_number(guest_phone_parsed):
+                        print(f"Invalid phone number '{guest_phone}'. Skipping.")
+                        continue
+                    guest_phone_formatted = phonenumbers.format_number(guest_phone_parsed,
+                                                                       phonenumbers.PhoneNumberFormat.E164)
+                    guest_phone = guest_phone_formatted.lstrip('+')
+                except phonenumbers.phonenumberutil.NumberParseException as e:
+                    print(f"Error parsing phone number '{guest_phone}': {e}")
                     continue
-                guest_phone = guest_phone.lstrip('+')
+
                 if guest_name is None or guest_name == '':
                     print("Guest not available (no name specified). Skipping.")
                     continue
-                # If no country is specified i set the default language english
-                if guest_language is None or guest_language == '':
-                    guest_language = 'GB'
+
+                # Validate country code and pass language based on country
+                if guest_language:
+                    try:
+                        country = pycountry.countries.get(alpha_2=guest_language)
+                        guest_language = country.alpha_2 if country else 'en'
+                    except Exception as e:
+                        print(f"Error validating country code: {e}")
+                        guest_language = 'en'
+                else:
+                    guest_language = 'en'
 
                 existing_guest = Guest.objects.filter(phone=guest_phone).first()
-
                 if existing_guest:
                     existing_guest.name = guest_name
                     existing_guest.language = guest_language
@@ -134,8 +148,6 @@ class PMS_Mews(PMS):
                     )
 
                 existing_stay = Stay.objects.filter(hotel=hotel, pms_reservation_id=reservation_id).first()
-
-                # not sure if we want to skip, but seems right here
                 if existing_stay:
                     print(
                         f"Stay with hotel_id={hotel.id} and pms_reservation_id={reservation_id} already exists. Skipping.")
@@ -173,21 +185,45 @@ class PMS_Mews(PMS):
                 guest_name = guest_details.get('Name')
                 guest_language = guest_details.get('Country')
 
-                # If no guest phone is specified, skip, again not sure if we want to skip
-                if guest_phone is None or guest_phone in ['', 'Not available', '123']:
-                    print("Guest not available (no phone specified). Skipping.")
+                # validate and clean phone number
+                # skip if no phone number is present
+                # validate and clean phone number
+                try:
+                    guest_phone_parsed = phonenumbers.parse(guest_phone, None)
+                    if not phonenumbers.is_valid_number(guest_phone_parsed):
+                        print("Invalid phone number. Skipping.")
+                        continue
+                    guest_phone_formatted = phonenumbers.format_number(guest_phone_parsed,
+                                                                       phonenumbers.PhoneNumberFormat.E164)
+                    guest_phone = guest_phone_formatted.lstrip('+')
+                except phonenumbers.phonenumberutil.NumberParseException as e:
+                    print(f"Error parsing phone number: {e}")
+                    print(f"Phone number causing the error: {guest_phone}")
                     continue
-                guest_phone = guest_phone.lstrip('+')
 
                 # If no guest name is specified, skip, again not sure we want to skip
                 if guest_name is None or guest_name == '':
                     print("Guest not available (no name specified). Skipping.")
                     continue
 
-                # If no country is specified, set the default language to English
-                # not sure but seems right
-                if guest_language is None or guest_language == '':
-                    guest_language = 'GB'
+                # validate country code and pass language based on country
+                # If no country is specified set the default language english
+                if guest_language:
+                    try:
+                        country = pycountry.countries.get(alpha_2=guest_language)
+                        if country:
+                            primary_language = pycountry.languages.get(alpha_2=country.alpha_2)
+                            if primary_language:
+                                guest_language = primary_language.alpha_2
+                            else:
+                                guest_language = 'en'
+                        else:
+                            guest_language = 'en'
+                    except Exception as e:
+                        print(f"Error validating country code: {e}")
+                        guest_language = 'en'
+                else:
+                    guest_language = 'en'
 
                 existing_guest = Guest.objects.filter(phone=guest_phone).first()
 
